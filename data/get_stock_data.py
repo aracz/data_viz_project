@@ -1,14 +1,38 @@
+import sys
+
 import yfinance as yf
+import logging
 
-# Define the stock symbol (e.g., Apple)
-stock_symbol = 'AAPL'
 
-# Download stock data for a specified period
-start_date = '2023-01-01'
-end_date = '2024-01-01'
-stock_data = yf.download(stock_symbol, start=start_date, end=end_date)
+class GetStockData:
 
-# Another way to get stock data for a period of time
-stock_data_1y = yf.Ticker(stock_symbol).history(period="1y")
+    def __init__(self, symbol, start_date=None, end_date=None, period=None, ):
+        self.title = 'Title'
+        self.symbol = symbol
+        self.start_date = start_date
+        self.end_date = end_date
+        self.period = period
 
+    def get_timeframe(self):
+        if (self.start_date is None or self.end_date is None) & (self.period is None):
+            logging.info('Timeframe parameters are set up incorrectly')
+            return sys.exit(0)
+        elif self.period is None:
+            return self.start_date, self.end_date, None
+        else:
+            return self.start_date, self.end_date, self.period
+
+    def get_stock_data_between_dates(self):
+        start_date, end_date, period = self.get_timeframe()
+        logging.info(f'Fetching data between {start_date} and {end_date} for symbol {self.symbol}')
+        stock_data = yf.download(self.symbol, start=start_date, end=end_date)
+        logging.info(f'Successfully fetched {len(stock_data)} rows')
+        return stock_data
+
+    def get_stock_data_period(self):
+        start_date, end_date, period = self.get_timeframe()
+        logging.info(f'Fetching data for period {period} for symbol {self.symbol}')
+        stock_data_period = yf.Ticker(self.symbol).history(period=period)
+        logging.info(f'Successfully fetched {len(stock_data_period)} rows')
+        return stock_data_period
 

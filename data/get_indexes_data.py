@@ -1,14 +1,22 @@
 import yfinance as yf
+import logging
+
 
 # S&P 500: ^GSPC
 # Dow Jones Industrial Average: ^DJI
 # NASDAQ Composite: ^IXIC
 
-# Define index symbols
-indexes = ['^GSPC', '^DJI', '^IXIC']
+class GetIndexesData:
 
-# Download historical data for the indexes
-start_date = '2023-01-01'
-end_date = '2024-01-01'
+    def __init__(self, start_date, end_date, indexes):
+        self.title = 'Title'
+        self.start_date = start_date
+        self.end_date = end_date
+        self.index_list = indexes
 
-index_data = yf.download(indexes, start=start_date, end=end_date)
+    def get_index_data(self):
+        indexes = self.index_list
+        logging.info(f'Fetching data for {indexes}')
+        index_data = yf.download(indexes, start=self.start_date, end=self.end_date)
+        logging.info(f'Successfully fetched {len(indexes)} rows')
+        return index_data
