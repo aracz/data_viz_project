@@ -10,7 +10,7 @@ def data_prep():
 
 data = data_prep()
 
-st.title("Esemenyek")
+st.title("Események")
 st.write("Teszt adatmegjelnites")
 st.write(data)
 
