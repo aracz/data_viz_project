@@ -1,5 +1,5 @@
-# data_viz_project
-STEMSisters Mentoring program - Demo Project
+# Tőzsdei Adatok Vizualizációja
+# STEMSisters Mentoring program - Demo Project
 
 A Skool STEMSisters Mentoring programjának részeként készítettük ezt a demo projektet tőzsdei adatokat felhasználva különböző vizualizációk készítéséhez.
 A STEMSisters mentorprogram célja, hogy támogassa és ösztönözze a fiatal nőket a STEM (tudomány, technológia, mérnöki tudományok és matematika) területein való pályaválasztásban és fejlődésben
