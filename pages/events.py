@@ -10,6 +10,27 @@ def data_prep():
     print(stock_data)
     return stock_data
 
+def event_graph(symbols, start_date, end_date, event_dates=None, title=""):
+    data = []
+    for s in symbols:
+        stock = get_stock_data.GetStockData(symbol=s, start_date=start_date, end_date=end_date)
+        df = stock.get_stock_data_between_dates()
+        df["Name"] = stock.get_stock_info("shortName")
+        data.append(df)
+    df = pd.concat(data)
+    fig = plt.figure()
+    sb.lineplot(data=df.reset_index(), x="Date", y="Close", hue="Name")
+    min_close = df["Close"].min()
+    max_close = df["Close"].max()
+    if event_dates is not None:
+        for e in event_dates:
+            date = pd.to_datetime(e)
+            plt.plot([date, date], [min_close, max_close], color='black', linestyle='--')
+    plt.xticks(rotation=45)
+    plt.ylabel("Záróár (USD)")
+    plt.xlabel("Dátum")
+    plt.title(title)
+    return fig
 
 data = data_prep()
 
@@ -18,29 +39,15 @@ st.write("Teszt adatmegjelnites")
 st.write(data)
 
 # Deepwater Horizon: 20 April 2010
-bp = get_stock_data.GetStockData(symbol='BP', start_date="2010-01-01", end_date="2012-12-31").get_stock_data_between_dates()
-bp["Name"] = "British Petrolum"
-tr = get_stock_data.GetStockData(symbol='RIG', start_date="2010-01-01", end_date="2012-12-31").get_stock_data_between_dates()
-tr["Name"] = "Transocean"
-xom = get_stock_data.GetStockData(symbol='XOM', start_date="2010-01-01", end_date="2012-12-31").get_stock_data_between_dates()
-xom["Name"] = "Exxon Mobil Corp"
-shell = get_stock_data.GetStockData(symbol='SHEL', start_date="2010-01-01", end_date="2012-12-31").get_stock_data_between_dates()
-shell["Name"] = "Shell"
-deepwter = pd.concat([bp, tr, xom, shell])
-fig = plt.figure()
-sb.lineplot(data=deepwter.reset_index(), x="Date", y="Close", hue="Name")
-plt.plot([pd.to_datetime("2010-04-20"), pd.to_datetime("2010-04-20")], [0, 100], color='black', linestyle='--')
-st.write(fig)
+st.subheader("Deepwater Horizon - olajkatasztrófa")
+st.write(event_graph(["BP", "RIG", "XOM", "SHEL"], "2010-01-01", "2012-12-31",
+        event_dates=["2010-04-20"], title="Deepwater Horizon és érintett cégek"))
 
-# Ukraine war started: 24 Feb 2022
-# Covid: March 2020
+# Covid: March 2020 + Ukraine war started: 24 Feb 2022
+st.subheader("2020-as évek eleje: Covid és Ukrán háború")
+st.write(event_graph(["^DJI", "^GSPC", "^IXIC", "^GDAXI"], "2019-01-01", "2023-12-31",
+        event_dates=["2020-03-11", "2022-02-24"], title="Tőzsdei indexek alakulása 2020 évek elején"))
 
 # AI Boom: 2023 - NVIDIA, OpenAI, Microsoft stock prices
-nvdia = get_stock_data.GetStockData(symbol='NVDA', start_date="2022-01-01", end_date="2024-12-31").get_stock_data_between_dates()
-nvdia["Name"] = "NVIDIA"
-msft = get_stock_data.GetStockData(symbol='MSFT', start_date="2022-01-01", end_date="2024-12-31").get_stock_data_between_dates()
-msft["Name"] = "Microsoft"
-ai_boom = pd.concat([nvdia, msft])
-fig = plt.figure()
-sb.lineplot(data=ai_boom.reset_index(), x="Date", y="Close", hue="Name")
-st.write(fig)
+st.subheader("AI boom")
+st.write(event_graph(["MSFT", "NVDA"], "2022-01-01", "2024-12-31", title="AI cégek részvényárfolyamának alakulása"))
