@@ -57,7 +57,7 @@ dow_30_symbols = [
 
 dow30_10y = []
 for code in dow_30_symbols:
-    stock = get_stock_data.GetStockData(code, period="10y")
+    stock = get_stock_data.GetStockData(code, period="5y")
     df = stock.get_stock_data_period()
     df["yy-mm"] = pd.to_datetime(df.index.strftime('%Y-%m'))
     df["Code"] = code
@@ -66,7 +66,7 @@ for code in dow_30_symbols:
     dow30_10y.append(df)
 dow30_10y = pd.concat(dow30_10y)
 
-# Dow 30 companies by sector in the last 10 years
+# Dow 30 companies by sector in the last 5 years
 fig = plt.figure()
 sb.lineplot(data=dow30_10y, x="yy-mm", y="Close", hue="Sector", errorbar=None)
 st.write(fig)
@@ -109,6 +109,27 @@ st.write("Nagy tech cégek részvényárfolyamának alakulása és osztalékai")
 st.write(draw_hilo_divs("IBM"))
 st.write(draw_hilo_divs("AAPL"))
 
+def candlesticks(df):
+    stock = get_stock_data.GetStockData(code, period="3mo")
+    sname = stock.get_stock_info("shortName")
+    df = stock.get_stock_data_period()
+    up = df[df["Close"] > df["Open"]]
+    down = df[df["Close"] <= df["Open"]]
+    fig = plt.figure()
+    #candles
+    plt.bar(up.index, up.High - up.Low, width=0.1, bottom=up.Low, color="green")
+    plt.bar(up.index, up.Close - up.Open, bottom=up.Open, color="green")
+    plt.bar(down.index, down.High - down.Low, width=0.1, bottom=down.Low, color="red")
+    plt.bar(down.index, down.Open - down.Close, bottom=down.Close, color="red")
+    #volumes
+    min = df["Low"].min()
+    max = df["High"].max()
+    min_vol = df["Volume"].min()
+    max_vol = df["Volume"].max()
+    scale = 0.2  * (max - min) / (max_vol - min_vol)
+    plt.bar(df.index, scale * df["Volume"], bottom=min, color="blue", alpha=0.3)
 
+    return fig
 
+st.write(candlesticks("MSFT"))
 
