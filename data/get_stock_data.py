@@ -1,5 +1,4 @@
 import sys
-
 import yfinance as yf
 import logging
 
