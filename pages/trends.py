@@ -39,6 +39,7 @@ dow_30_symbols = [
 ]
 
 
+@st.cache_data
 def get_dow30(period="1y"):
     dow30 = []
     for symbol in dow_30_symbols:
@@ -70,6 +71,7 @@ def hilo_and_divs(df, name=None):
     return hl, divs
 
 
+@st.cache_data
 def draw_hilo_divs(symbol):
     stock = get_stock_data.GetStockData(symbol, period="1y")
     sname = stock.get_stock_info("shortName")
@@ -84,6 +86,7 @@ def draw_hilo_divs(symbol):
     return fig
 
 
+@st.cache_data
 def candlesticks(symbol):
     stock = get_stock_data.GetStockData(symbol, period="3mo")
     sname = stock.get_stock_info("shortName")
@@ -110,8 +113,10 @@ def candlesticks(symbol):
 
 
 st.title("Trendek")
-st.markdown("A tőzsdei trendek vizualizálása kulcsfontosságú eszközként szolgál a befektetők és elemzők számára a pénzügyi piacok megértésében. A piacok ármozgásainak nyomon követése és elemzése segíti a megalapozott döntéshozatalt, a fontos trendeket azonosítását és a jövőbeli ármozgások előrejelzését.")
-st.markdown("Ezen az oldalon az árfolyamok alakulásának különböző megjelenítései találhatóak különös tekintettel a Dow 30 Index cégeinek adataira.")
+st.markdown(
+    "A tőzsdei trendek vizualizálása kulcsfontosságú eszközként szolgál a befektetők és elemzők számára a pénzügyi piacok megértésében. A piacok ármozgásainak nyomon követése és elemzése segíti a megalapozott döntéshozatalt, a fontos trendeket azonosítását és a jövőbeli ármozgások előrejelzését.")
+st.markdown(
+    "Ezen az oldalon az árfolyamok alakulásának különböző megjelenítései találhatóak különös tekintettel a Dow 30 Index cégeinek adataira.")
 
 # Dividends vs stock price
 st.subheader("Nagy tech cégek részvényárfolyamának alakulása és osztalékai")
@@ -121,9 +126,12 @@ st.write(candlesticks("MSFT"))
 # Dow 30 companies by sector
 st.subheader("A Dow 30 cégek szektorai")
 
-st.markdown("A Dow Jones Industrial Average (DJIA), ismertebb nevén a Dow 30, egyike a világ legismertebb és legfontosabb tőzsdei indexeinek. Ez az index a 30 legnagyobb amerikai vállalat részvényeinek teljesítményét követi, és gyakran a tőzsdei piacon uralkodó gazdasági trendek és piaci hangulat mutatójaként szolgál.")
-st.markdown("Az index 30 különböző céget tartalmaz, amelyek az amerikai gazdaság különböző szegmenseit képviselik, beleértve a technológiát (pl. Apple, Microsoft), az ipart (pl. Boeing, Caterpillar), a pénzügyi szektort (pl. JPMorgan Chase), az egészségügyet (pl. Johnson & Johnson, Merck) és más fontos ágazatokat.")
-st.markdown("Az alábbi ábrákon a részvényárfolyamok és a volatilitás szektoronkénti trendjeinek megjelenítését helyeztük a középpontba.")
+st.markdown(
+    "A Dow Jones Industrial Average (DJIA), ismertebb nevén a Dow 30, egyike a világ legismertebb és legfontosabb tőzsdei indexeinek. Ez az index a 30 legnagyobb amerikai vállalat részvényeinek teljesítményét követi, és gyakran a tőzsdei piacon uralkodó gazdasági trendek és piaci hangulat mutatójaként szolgál.")
+st.markdown(
+    "Az index 30 különböző céget tartalmaz, amelyek az amerikai gazdaság különböző szegmenseit képviselik, beleértve a technológiát (pl. Apple, Microsoft), az ipart (pl. Boeing, Caterpillar), a pénzügyi szektort (pl. JPMorgan Chase), az egészségügyet (pl. Johnson & Johnson, Merck) és más fontos ágazatokat.")
+st.markdown(
+    "Az alábbi ábrákon a részvényárfolyamok és a volatilitás szektoronkénti trendjeinek megjelenítését helyeztük a középpontba.")
 
 dow30_10y = get_dow30(period="10y")
 

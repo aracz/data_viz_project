@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sb
 from data import get_stock_data
 
-
+@st.cache_data
 def event_graph(symbols, start_date, end_date, event_dates=None, title=""):
     data = []
     for s in symbols:
