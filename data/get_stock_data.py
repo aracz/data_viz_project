@@ -22,10 +22,10 @@ class GetStockData:
         else:
             return self.start_date, self.end_date, self.period
 
-    def get_stock_data_between_dates(self):
+    def get_stock_data_between_dates(self, mli=False):
         start_date, end_date, period = self.get_timeframe()
         logging.info(f'Fetching data between {start_date} and {end_date} for symbol {self.symbol}')
-        stock_data = yf.download(self.symbol, start=start_date, end=end_date)
+        stock_data = yf.download(self.symbol, start=start_date, end=end_date, multi_level_index=mli)
         logging.info(f'Successfully fetched {len(stock_data)} rows')
         return stock_data
 
@@ -35,4 +35,16 @@ class GetStockData:
         stock_data_period = yf.Ticker(self.symbol).history(period=period)
         logging.info(f'Successfully fetched {len(stock_data_period)} rows')
         return stock_data_period
+
+    def get_stock_info(self, info):
+        logging.info(f'Fetching info for symbol {self.symbol}')
+        stock_info = yf.Ticker(self.symbol).info.get(info, f'Info {info} not available')
+        logging.info(f'Successfully fetched info for {self.symbol}')
+        return stock_info
+
+    def get_sustainability(self, info):
+        logging.info(f'Fetching sustainability data for symbol {self.symbol}')
+        sustainability = yf.Ticker(self.symbol).sustainability.loc[info]
+        logging.info(f'Successfully fetched sustainability data for {self.symbol}')
+        return sustainability
 

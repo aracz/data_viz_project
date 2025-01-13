@@ -1,4 +1,7 @@
 import streamlit as st
+import seaborn as sb
+import matplotlib.pyplot as plt
+import pandas as pd
 from data import get_stock_data
 
 
@@ -51,3 +54,61 @@ dow_30_symbols = [
     "VZ",   # Verizon Communications
     "V"     # Visa Inc.
 ]
+
+dow30_10y = []
+for code in dow_30_symbols:
+    stock = get_stock_data.GetStockData(code, period="10y")
+    df = stock.get_stock_data_period()
+    df["yy-mm"] = pd.to_datetime(df.index.strftime('%Y-%m'))
+    df["Code"] = code
+    df["Sector"] = stock.get_stock_info("sector")
+    df["Volatility"] = 200 * (df["High"] - df["Low"]) / (df["High"] + df["Low"])
+    dow30_10y.append(df)
+dow30_10y = pd.concat(dow30_10y)
+
+# Dow 30 companies by sector in the last 10 years
+fig = plt.figure()
+sb.lineplot(data=dow30_10y, x="yy-mm", y="Close", hue="Sector", errorbar=None)
+st.write(fig)
+
+# Volatility of stocks in some sectors of dow 30
+secs = ["Industrials", "Financial Services", "Technology"]
+fig = plt.figure()
+sb.lineplot(data=dow30_10y[dow30_10y["Sector"].isin(secs)].groupby(["yy-mm", "Sector"]).mean(numeric_only=True), 
+            x="yy-mm", y="Volatility", errorbar=None, hue="Sector")
+st.write(fig)
+
+monthly = dow30_10y.groupby(["yy-mm", "Sector"])
+monthly_vol = (200 * (monthly.max("High")["High"] - monthly.min("Low")["Low"]) 
+               / (monthly.max("High")["High"] + monthly.min("Low")["Low"])).reset_index()
+fig = plt.figure()
+sb.lineplot(data=monthly_vol[monthly_vol["Sector"].isin(secs)], x="yy-mm", y=0, errorbar=None, hue="Sector")
+st.write(fig)
+
+# Dividends vs stock price
+def hilo_and_divs(df, name=None):
+    hl = df[["High", "Low"]].reset_index().melt(id_vars="Date")
+    divs = df[["Stock Splits", "Dividends"]].reset_index().melt(id_vars="Date")
+    divs = divs[divs["value"] != 0.0]
+    divs["y"] = hl.min()["value"]
+    hl["Name"] = name
+    divs["Name"] = name
+    return hl, divs
+
+def draw_hilo_divs(code):
+    stock = get_stock_data.GetStockData(code, period="1y")
+    sname = stock.get_stock_info("shortName")
+    hilo, divs = hilo_and_divs(stock.get_stock_data_period(), name=sname)
+    fig = plt.figure(figsize=(10, 6))
+    sb.lineplot(data=hilo, x="Date", y="value", hue="variable")
+    sb.scatterplot(data=divs, x="Date", y="y", hue="variable", size="value")
+    plt.title(f"{sname} ({code}) stock price and dividends")
+    return fig
+
+st.write("Nagy tech cégek részvényárfolyamának alakulása és osztalékai") 
+st.write(draw_hilo_divs("IBM"))
+st.write(draw_hilo_divs("AAPL"))
+
+
+
+
