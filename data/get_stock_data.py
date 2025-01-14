@@ -4,13 +4,14 @@ import logging
 
 
 class GetStockData:
-
     def __init__(self, symbol, start_date=None, end_date=None, period=None, ):
         self.title = 'Title'
         self.symbol = symbol
         self.start_date = start_date
         self.end_date = end_date
         self.period = period
+        self.info = None
+        self.sustainability = None
 
     def get_timeframe(self):
         if (self.start_date is None or self.end_date is None) & (self.period is None):
@@ -36,14 +37,22 @@ class GetStockData:
         return stock_data_period
 
     def get_stock_info(self, info):
-        logging.info(f'Fetching info for symbol {self.symbol}')
-        stock_info = yf.Ticker(self.symbol).info.get(info, f'Info {info} not available')
-        logging.info(f'Successfully fetched info for {self.symbol}')
-        return stock_info
+        if self.info is None:  
+            logging.info(f'Fetching info for symbol {self.symbol}')
+            self.info = yf.Ticker(self.symbol).get_info()
+            logging.info(f'Successfully fetched info for {self.symbol}')
+        return self.info.get(info, f'Info {info} not available')
 
     def get_sustainability(self, info):
-        logging.info(f'Fetching sustainability data for symbol {self.symbol}')
-        sustainability = yf.Ticker(self.symbol).sustainability.loc[info]
-        logging.info(f'Successfully fetched sustainability data for {self.symbol}')
-        return sustainability
+        if self.sustainability is None:
+            logging.info(f'Fetching sustainability data for symbol {self.symbol}')
+            self.sustainability = yf.Ticker(self.symbol).get_sustainability()
+            logging.info(f'Successfully fetched sustainability data for {self.symbol}')
+        return self.sustainability.loc[info]["esgScores"]
+    
+    def get_holders(self):
+        logging.info(f'Fetching holders for symbol {self.symbol}')
+        holders = yf.Ticker(self.symbol).get_institutional_holders()
+        logging.info(f'Successfully fetched holders for {self.symbol}')
+        return holders
 
