@@ -52,7 +52,7 @@ class GetStockData:
     
     def get_holders(self):
         logging.info(f'Fetching holders for symbol {self.symbol}')
-        holders = yf.Ticker(self.symbol).get_institutional_holders()
+        holders = yf.Ticker(self.symbol).institutional_holders
         logging.info(f'Successfully fetched holders for {self.symbol}')
         return holders
 
